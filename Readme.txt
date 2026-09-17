@@ -3,6 +3,7 @@ This repository contains the source code for the European Wine Trip blog, built 
 
 Technical Architecture & Evolution
 Frontend: Built with React to deliver a fast, interactive user interface.
+Backend: Folder Eurowinetrip
 
 Initial Development Build: Originally designed as a full-stack application where the React frontend dynamically fetched blog posts, images, and metadata directly from the Django backend database (/Eurowinetrip).
 
