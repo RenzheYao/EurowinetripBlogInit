@@ -1,0 +1,16 @@
+Here is the most efficient order of operations:
+Phase 1: The "Data Pipeline" (Start Here)
+1. Update SEO.js: Prepare the "container" that will hold your meta tags.
+2. Update PostDetailPage.js: Connect your Django seo_title and seo_descriptionto the SEO.js component.
+• Goal: Verify that when you click a post, the browser tab title changes to your SEO Title instead of just the blog title.
+
+Phase 2: The "Skeleton" (Semantic HTML)
+Once the metadata is flowing, fix the HTML structure so Google knows how to read that data.
+1. Layout/Header/Footer: Wrap your navigation in <nav>, your branding in <header>, and your credits in <footer>.
+2. Page Components: Go through Homepage, CategoryPage, and PostDetailPage to ensure you are using <main>, <article>, and correct <h1>-<h3> hierarchies.
+3. Image Tagging: Update all <img> tags to use the captions/alt text from your backend.
+
+Phase 3: The "Map" (External Files)
+Now that the site structure is perfect, give the search engines the "instruction manual."
+1. sitemap.xml: Create this (ideally on the Django side) so Google has a list of every URL you’ve ever created.
+2. robots.txt: Create this to tell bots which folders to ignore (like /admin) and where the sitemap is located.

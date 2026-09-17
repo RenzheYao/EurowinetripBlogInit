@@ -1,0 +1,389 @@
+# Vinum Europae – Frontend Project Plan (Concrete Execution)
+
+This plan translates the **frontend specification** into an **actionable, week-by-week execution roadmap** suitable for:
+
+* A solo senior developer, or
+* A small frontend team (1–2 engineers)
+
+Target outcome: **Production-ready, SEO-safe wine blog frontend** with clean upgrade path to Next.js.
+
+---
+
+## Project Assumptions
+
+* Backend API follows the agreed Django REST schema
+* Design system is minimalist (no heavy UI framework)
+* Initial launch focuses on **blog + education**, not e-commerce
+* React (CSR + static pre-render) is Phase 1
+
+---
+
+## Phase 0 – Preparation (2–3 Days)
+
+### Objectives
+
+* Remove ambiguity
+* Lock technical decisions
+* Prevent rework later
+
+### Tasks
+
+* Finalize:
+
+  * Supported locales: `en`, `zh`
+  * Typography choices (heading + body fonts)
+  * Analytics providers (GA + Baidu)
+* Confirm API endpoints & fields
+* Define breakpoints and design tokens
+
+### Deliverables
+
+* `README.md` (architecture + scripts)
+* Design tokens file (`tokens.js`)
+
+---
+
+## Phase 1 – Foundation & Infrastructure (Week 1)
+
+### Goals
+
+* App skeleton
+* Routing
+* API & data layer
+* Language system
+* **Initial backend–frontend contract alignment**
+
+### Backend Alignment Prerequisites (Before Coding UI)
+
+* Confirm existing Django models match API schema:
+
+  * `Post`, `PostTranslation`, `Category`, `Tag`, `Comment`, `ViewStat`
+* Verify tested endpoints in Insomnia:
+
+  * Posts list
+  * Post detail by slug
+  * Comments (GET/POST)
+* Freeze **v1 API field names** (no renaming without coordination)
+* Decide temporary DB: SQLite (dev), PostgreSQL (prod-ready later)
+
+---
+
+### Tasks
+
+#### 1. Project Setup
+
+* Initialize React 18 project
+* Install core dependencies:
+
+  * react-router-dom
+  * axios
+  * @tanstack/react-query
+  * react-intl
+
+#### 2. API Contract Definition (Critical Step)
+
+* Create `/src/contracts/`:
+
+  * `post.contract.ts` (or `.js`)
+  * `comment.contract.ts`
+* Copy **real API responses from Insomnia** into mock JSON files
+* Define frontend-facing interfaces based on *actual backend output*
+
+#### 3. API Client
+
+* Axios base config pointing to Django dev server
+* Axios interceptor for staff token
+* Central error normalization
+
+#### 4. Routing System
+
+* Implement language-based routes:
+
+  * `/:lang/*`
+* Route guard for unsupported languages
+
+#### 5. Language Context
+
+* Detect browser language
+* Persist selection to `localStorage`
+* Sync URL + context
+
+### Backend–Frontend Sync Checkpoint
+
+* Frontend can fetch **real data** from Django
+* No mocked fields that do not exist in backend
+* Any mismatch logged as API TODO (backend-owned)
+
+---
+
+## Phase 2 – Layout & Design System (Week 2)
+
+### Goals
+
+* Visual foundation
+* Responsive layout
+* Navigation consistency
+
+### Tasks
+
+#### 1. Global Layout
+
+* Header (desktop + mobile)
+* Footer
+* Sidebar (blog-only pages)
+
+#### 2. Design Tokens
+
+* Colors
+* Spacing
+* Typography scale
+* Breakpoints
+
+#### 3. Navigation Behavior
+
+* Sticky header
+* Smart scroll logic
+
+#### 4. Accessibility Basics
+
+* Skip-to-content link
+* Keyboard navigation
+
+### Deliverables
+
+* Responsive shell
+* Consistent styling across pages
+
+---
+
+## Phase 3 – Core Content Features (Week 3)
+
+### Goals
+
+* Blog listing
+* Article cards
+* Category & tag navigation
+* **Tight backend–frontend field validation**
+
+### Tasks
+
+#### 1. React Query Hooks (Using Real API)
+
+* `usePosts({ lang, page, search, category, tag })`
+* `useCategories(lang)`
+* `useTags(lang)`
+
+> Backend validation:
+>
+> * Pagination shape matches DRF pagination
+> * `lang` param respected in serializers
+
+#### 2. Components
+
+* `ArticleCard`
+
+  * Render only fields returned by backend
+  * No hardcoded placeholders
+* `CategoryGrid`
+* `TagCloud`
+
+#### 3. Blog Home Page
+
+* Paginated post grid
+* Verify:
+
+  * Slugs resolve correctly
+  * Category/tag filters map to backend queries
+
+### Backend–Frontend Sync Checkpoint
+
+* One-to-one mapping between API fields and UI props
+* Backend serializers adjusted if frontend needs change
+
+---
+
+## Phase 4 – Post Detail & SEO (Week 4)
+
+### Goals
+
+* Article reading experience
+* SEO correctness
+* Social sharing
+* **Backend-driven SEO metadata**
+
+### Tasks
+
+#### 1. Post Detail Page
+
+* Fetch by `slug + lang`
+* Render semantic `<article>`
+* Increment view count via:
+
+  * `POST /posts/{id}/view/`
+
+#### 2. SEOHead Component
+
+* Consume backend-provided:
+
+  * `seo.title`
+  * `seo.description`
+  * `translations` URLs
+* No frontend-generated SEO guesses
+
+#### 3. Optimized Images
+
+* Hero image URL from backend CDN/media
+* Fallback handling if image missing
+
+#### 4. Sharing
+
+* Use backend-provided canonical URLs
+
+### Backend–Frontend Sync Checkpoint
+
+* SEO tags match backend data exactly
+* hreflang URLs validated
+
+---
+
+## Phase 5 – Search, Comments & Interaction (Week 5)
+
+### Goals
+
+* Discoverability
+* Engagement
+* Moderated interaction
+* **Security & validation alignment**
+
+### Tasks
+
+#### 1. Search
+
+* Connect to backend `/search/` endpoint
+* Validate:
+
+  * Ranking quality
+  * Language awareness
+
+#### 2. Comments
+
+* GET approved comments only
+* POST comment submission
+* Handle backend responses:
+
+  * Validation errors
+  * Rate limiting
+
+#### 3. Behavioral Tracking
+
+* `useClickTracker`
+* `trackEvent()` abstraction
+
+### Backend–Frontend Sync Checkpoint
+
+* Frontend handles all backend validation errors gracefully
+* No frontend-only assumptions
+
+---
+
+## Phase 6 – Performance, Accessibility & Errors (Week 6)
+
+### Goals
+
+* Production robustness
+* WCAG AA compliance
+* **Backend performance readiness**
+
+### Tasks
+
+#### 1. Performance
+
+* Static pre-render setup
+* Validate backend responses are:
+
+  * Cacheable
+  * CDN-friendly
+
+#### 2. Error Handling
+
+* Centralized error mapping based on real API errors
+* Empty states for:
+
+  * No posts
+  * No search results
+
+#### 3. Accessibility Audit
+
+* Screen reader testing with real content
+
+### Backend–Frontend Sync Checkpoint
+
+* API error formats are stable
+* Backend pagination & filtering performant enough for prod
+
+---
+
+## Phase 7 – Testing & Deployment (Week 7)
+
+### Goals
+
+* Confidence
+* Stability
+* Automation
+
+### Tasks
+
+#### 1. Testing
+
+* Unit tests (components + hooks)
+* Integration tests (routing + API)
+* E2E tests (critical flows)
+
+#### 2. CI/CD
+
+* Lint
+* Test
+* Build
+* Lighthouse CI
+
+#### 3. Deployment
+
+* CDN configuration
+* Cache headers
+* Environment separation
+
+### Deliverables
+
+* Production deployment
+
+---
+
+## Phase 8 – Post-Launch Hardening (Week 8)
+
+### Goals
+
+* Prepare for scale
+* Prepare for Next.js
+
+### Tasks
+
+* Analytics review
+* SEO crawl validation (Google + Baidu)
+* Content editor feedback
+* Technical debt cleanup
+
+### Deliverables
+
+* Stable v1.0 frontend
+
+
+## Exit Criteria (Definition of Done)
+
+* All routes crawlable
+* No SEO blocking issues
+* Lighthouse ≥ 90
+* API/frontend contract stable
+* Ready for Next.js migration
+
+---
+
